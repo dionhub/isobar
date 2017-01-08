@@ -2,7 +2,7 @@
 # option to save down updated files - to collect all unique files in a directory
 # option to save down time file checked and boolian if updated - for analyzing the pattern of update times
 # not sure how to keep the last file details without reading from disk when using cron, so using sleep
-# todo: date format from file reading, logfile
+# todo: (1) close logfile (2) date format from Last-Modified same as datetime (3) convert all times to Pacific time
 
 import time, datetime
 import os, urllib2, urllib
@@ -57,4 +57,3 @@ for i in range(1000000):   # while(true)
     time.sleep(30)
 
 logFile.close()
-
