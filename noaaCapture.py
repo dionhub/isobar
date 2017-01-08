@@ -1,4 +1,4 @@
- log file of when a web file is updated
+# return a log file of when a web file is updated
 # option to save down updated files - to collect all unique files in a directory
 # option to save down time file checked and boolian if updated - for analyzing the pattern of update times
 # not sure how to keep the last file details without reading from disk when using cron, so using sleep
