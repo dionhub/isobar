@@ -1,2 +1,2 @@
 # isobar
-collate weather maps
+collate weather maps.
