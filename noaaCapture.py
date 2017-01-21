@@ -6,54 +6,32 @@
 
 import time, datetime
 import os, urllib2, urllib
-#
-# curTime = datetime.datetime.now()
-# format = "%Y%M%D-%H:%M:%S"
-# print str(curTime)
 
-os.chdir('/Users/dion/Dropbox/_FUN/Coding/dionProjects/WebCapture/')
+def fetch_image_from_url(prevModified, saveFile = True):
+    """obtains last modified info from a URL. If it
+    differs to the previous modified time URL content
+    will be saved to disk.
+    """
 
-saveFile = True
-targetUrl = 'http://www.opc.ncep.noaa.gov/P_sfc_full_ocean_color.png'
-prevFileTime = ''
-currFileTime = ''
-logFileName = 'noaaCaptureLog-'+ str(datetime.datetime.now()) + '.csv'
-print 'logFileName = ' + logFileName # does print need ()?
-logFile = open(logFileName, 'w')
+    url = 'http://www.opc.ncep.noaa.gov/P_sfc_full_ocean_color.png'
+    imageFile = urllib2.urlopen(url)
+    logFileName = 'noaaCaptureLog-%s.csv' % str(datetime.datetime.now())
+    lastModified = imageFile.info().getdate('Last-Modified')
+    currentModified = '%s_%s' % ('-'.join(str(x) for x in lastModified[:3]), ':'.join(str(x) for x in lastModified[3:]))
 
+    with open(logFileName, 'a') as f:
+        f.write('%s,%s\n' % (str(datetime.datetime.now()), str(currentModified)))
+
+        if currentModified != prevModified:
+            f.write('new file since %s \n' % 'time diff here')
+
+            if saveFile:
+                urllib.urlretrieve(url, 'png-noaa-%s.png' % str(currentModified))
+
+    return currentModified
+
+#os.chdir('/Users/dion/Dropbox/_FUN/Coding/dionProjects/WebCapture/')
+prevModified = None
 for i in range(1000000):   # while(true)
-
-    targetFile = urllib2.urlopen(targetUrl)
-    currFileTime = targetFile.info().getdate('Last-Modified')
-    # print currFileTime, prevFileTime
-    logFile.write(str(i) + ' ' + str(datetime.datetime.now())+','+ str(currFileTime)+'\n')
-    print (str(i) +' ' +str(datetime.datetime.now()), str(currFileTime))
-    # print
-    # print 'CURRENT FILE TIME'
-    # print datetime(currFileTime).ctime('')
-    # print datetime.datetime(int(currFileTime))
-    # print time(currFileTime)
-    # print
-
-
-    if (currFileTime != prevFileTime):
-        #append time and currFileTime to log file
-        logFile.write('new file since '+ 'x' + '\n') # time diff here
-        print ('new file since '+ 'x' + '\n') # time diff here
-        print (str(currFileTime) + str(prevFileTime))
-        logFile.write(str(currFileTime) + str(prevFileTime))
-
-        if saveFile:
-            print '\n'
-            print targetFile.info()
-            saveFileName = 'png/noaa-'+ str(currFileTime) +'.png'   #yymmdd:hm:mm:ss"
-            # print str(currFileTime)
-            print saveFileName
-            print
-            urllib.urlretrieve(targetUrl, saveFileName)
-
-    prevFileTime = currFileTime
-    targetFile.close()
+    prevModified = fetch_image_from_url(prevModified)
     time.sleep(30)
-
-logFile.close()
